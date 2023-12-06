@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title> Printdex </title>
+    <meta name="description" content="A guide to getting the most out of Streams.">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+
+      :root{
+        --card-width: 50%;
+        --card-height: 280.5px;
+        --font-size: 16px;
+        --card-color: #444;
+        --card-background: #fdfdfd;
+        --title-visible: 'inline-block';
+        --content-visible: 'inline-block';
+        --meta-visible: 'inline-block';
+        --fade-position: calc(0.9 * 2.5em);
+      }
+
+      *{
+        box-sizing: border-box;
+      }
+
+      body{
+        text-align: center;
+        font-size: 18px;
+        min-width: fit-content;
+        font-family: Helvetica Nueu, system-ui;
+        padding-bottom: 4rem;
+        margin: 0px;
+      }
+
+      nav{
+        margin: 0px;
+        text-align: left;
+        padding: 10px;
+      }
+
+      nav h1{
+        display: inline-block;
+        margin: 0px;
+      }
+
+      .ui{
+        margin: 4rem 0rem;
+        width: 30rem;
+        display: inline-block;
+        text-align: left;
+        line-height: 1.5em;
+      }
+
+      .check-boxes{
+        width: 100%;
+        padding: 0rem 0rem 2rem 0rem;
+      }
+
+      textarea{
+        width: 100%;
+        height: 15rem;
+        resize: vertical;
+        padding: 1em 0.75em;
+        line-height: 1.7em;
+      }
+
+      details{
+        border: solid 2px black;
+        padding: 1em;
+      }
+
+      summary{
+        cursor: pointer;
+      }
+
+      details p{
+        margin: 1em 0em 0em 0em;
+      }
+
+    #a4 {
+        width: 793px;
+/*        height: 1122px;*/
+        font-size: 0px;
+        line-height: 0px;
+        display: inline-flex;
+        flex-wrap: wrap;
+        text-align: left;
+        flex-direction: row;
+    }
+
+    .card{
+      width: var(--card-width);
+      height: var(--card-height);
+      font-size: var(--font-size);
+      background: var(--card-background);
+      color: var(--card-color);
+      margin: 0px;
+      border: 1px dotted #444;
+      line-height: 1.4em;
+      display: inline-block;
+      padding: 1.5em;
+      position: relative;
+      overflow: hidden;
+      /* These are technically the same, but use both */
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+
+      -ms-word-break: break-all;
+      /* This is the dangerous one in WebKit, as it breaks things wherever */
+      word-break: break-all;
+      /* Instead use this non-standard one: */
+      word-break: break-word;
+
+      /* Adds a hyphen where the word breaks, if supported (No Blink) */
+      -ms-hyphens: auto;
+      -moz-hyphens: auto;
+      -webkit-hyphens: auto;
+      hyphens: auto;
+    }
+
+    h2{
+      margin: 0px;
+      margin-bottom: 1em;
+      line-height: 1.2em;
+    }
+
+    h3{
+      text-align: center;
+    }
+
+    p{
+      margin: 0px 0px 1.5em 0px;
+      word-wrap: break-word;
+    }
+
+    label{
+      font-weight: 800;
+    }
+
+    select{
+      padding: 4px;
+    }
+
+    input[type=text]{
+      padding: 6px;
+      font-size: inherit;
+      width: 100%;
+      margin: 5px 0px;
+    }
+
+
+    input[type='number']{
+      width: 50px;
+      padding: 4px;
+    }
+
+    input[type='number']:focus{
+/*      outline: solid 1px rgba(200, 200, 200, 1);*/
+    }
+
+    button{
+      padding: 15px;
+      width: 100%;
+      background: #222;
+      color: #eee;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .title{
+      height: fit-content;
+      display: var(--title-visible);
+      width: 100%;
+    }
+
+    .content{
+      display: var(--content-visible);
+    }
+
+    .content-padding{
+      position: absolute;
+      bottom: var(--fade-position);
+      left: 0px;
+      width: 100%;
+      height: 1.5em;
+      background: #fdfdfd;
+    }
+
+    .meta{
+      display: var(--meta-visible);
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      border-top: black 1px dotted;
+      height: 2.5em;
+      width: 100%;
+      background: white;
+      padding: 0.5em 1em 0em 1em;
+      font-size: 0.9em;
+      text-align: right;
+      overflow: hidden;
+    }
+
+    .meta div{
+      display: inline-block;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+            margin: 0px;
+        }
+        #a4, #a4 * {
+            visibility: visible;
+        }
+        #a4 {
+            position: absolute;
+            left: 0;
+            top: 0;
+            border: none; /* Remove border for printing */
+        }
+    }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+</head>
+<body>
+  <nav>
+    <h1> Printdex </h1>
+  </nav>
+
+  <div class=ui>
+
+    <details>
+      <summary>Github Issues</summary>
+      <p></p>
+        <input type=text id=url placeholder="https://github.com/username/repo-name">
+        <input type=text id=token placeholder="Access token if private repo">
+        <div id=message style="font-size:14px"></div>
+    </details>
+    
+    <h3> Or </h3>
+
+    <details>
+      <summary>Markdown list format</summary>
+      <p><textarea id=markdown placeholder="- list item 1" spellcheck="false"></textarea> </p>
+    </details>
+
+    <br>
+    <br>
+
+    <p>
+      On each page, I want to have <select id=horizontal-count>
+        <option value=1> 1 </option>
+        <option value=2 selected> 2 </option>
+      </select> cards per row, and 
+
+      <select id=vertical-count>
+        <option value=2> 2 </option>
+        <option value=3> 3 </option>
+        <option value=4 selected> 4 </option>
+        <option value=5> 5 </option>
+        <option value=6> 6 </option>
+        <option value=7> 7 </option>
+        <option value=8> 8 </option>
+      </select> cards per column.
+
+     With the font size set to <input type=number id=font-size value=16>
+    </p>
+
+    <p> I want the cards to have a 
+     <input type="checkbox" id="title-check" name="title" value="true" checked=true>
+     <label for="title"> Title</label>, as well as any existing content
+
+     <input type="checkbox" id="content-check" name="content" value="true" checked=true>
+     <label for="content"> Content</label>, and relevant
+
+     <input type="checkbox" id="meta-check" name="meta" value="true" checked=true>
+     <label for="meta"> Metadata</label>.
+   </p>
+
+
+    <button onclick="printSVG()">Print cards</button>
+  </div>
+
+    <div id="a4">
+        
+        <div class=card>
+          <div class=title>
+            <h2> hey there </h2>
+          </div>
+          <div class=content>
+            <p> This is Printdex, a small app for making index cards out of things that can be made into index cards. </p>
+            <div class=content-padding></div>
+          </div>
+          <div class=meta>06-12-2023</div>
+        </div>
+        <div class=card>
+          <div class=title>
+            <h2> these are some sample cards </h2>
+          </div>
+          <div class=content>
+            <p> They an have a title, content, and some metadata. </p>
+            <div class=content-padding></div>
+          </div>
+          <div class=meta>Right now</div>
+        </div>
+
+        <div class=card>
+          <div class=title>
+            <h2> The idea is, you paste in a link to a Github repo </h2>
+          </div>
+          <div class=content>
+            <p> And the app fetches all the issues and converts them to a print-friendly layout. </p>
+            <div class=content-padding></div>
+          </div>
+          <div class=meta>Soon</div>
+        </div>
+
+        <div class=card>
+          <div class=title>
+            <h2> i'm also thinking about what other apps could be connected in a similar manner </h2>
+          </div>
+          <div class=content>
+            <p> Maybe CSVs? Todoist? Markdown lists? </p>
+            <div class=content-padding></div>
+          </div>
+          <div class=meta>the future</div>
+        </div>
+
+    </div>
+
+    <script>
+      const a4height = 1122
+      document.getElementById('vertical-count').addEventListener('change', modifyCard)
+      document.getElementById('horizontal-count').addEventListener('change', modifyCard)
+      document.getElementById('font-size').addEventListener('change', modifyCard)
+
+      document.getElementById('title-check').addEventListener('input', modifyCard)
+      document.getElementById('content-check').addEventListener('input', modifyCard)
+      document.getElementById('meta-check').addEventListener('input', modifyCard)
+
+      document.getElementById('url').addEventListener('change', useURL)
+      document.getElementById('token').addEventListener('change', useURL)
+      document.getElementById('markdown').addEventListener('input', useMarkdown)
+
+
+
+      function printSVG(){
+          let node = document.getElementById('a4');
+
+          domtoimage.toSvg(node)
+            .then(function (dataUrl) {
+                let img = new Image();
+                img.src = dataUrl;
+                img.id = "output"
+                document.body.appendChild(img);
+                openPage('output')
+            })
+            .catch(function (error) {
+                console.error('oops, something went wrong!', error);
+            });
+      }
+       
+      
+      function openPage(svgId) {
+        let svgElement = document.getElementById(svgId);
+        let svgHTML = svgElement.outerHTML;
+        let printWindow = window.open('', '_blank', 'height=200,width=300');
+
+        printWindow.document.write('<html><head><title>Print</title>');
+        // Include any stylesheets or specific styles here
+        printWindow.document.write('</head><body style="margin:0px">');
+        printWindow.document.write(svgHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+
+        // Wait for the content to load before printing
+        printWindow.onload = function() {
+            printWindow.focus(); // Required for some browsers
+            printWindow.print();
+            printWindow.close();
+        };
+
+        svgElement.remove()
+    }
+
+
+    function modifyCard(newHeight, newWidth) {
+        let vCount = document.getElementById('vertical-count').value
+        let hCount = document.getElementById('horizontal-count').value
+        let fSize = Number(document.getElementById('font-size').value) || 18
+
+        let includeTitle = document.getElementById('title-check').checked
+        let includeContent = document.getElementById('content-check').checked
+        let includeMeta = document.getElementById('meta-check').checked
+
+        document.documentElement.style.setProperty('--card-height', `${a4height/vCount}px`);
+        document.documentElement.style.setProperty('--card-width', `${100/hCount}%`);
+        document.documentElement.style.setProperty('--font-size', `${fSize}px`);
+
+        document.documentElement.style.setProperty('--title-visible', `${includeTitle ? 'inline-block' : 'none'}`);
+        document.documentElement.style.setProperty('--content-visible', `${includeContent ? 'inline-block' : 'none'}`);
+        document.documentElement.style.setProperty('--meta-visible', `${includeMeta ? 'inline-block' : 'none'}`);
+
+        document.documentElement.style.setProperty('--fade-position', `${includeMeta ? "calc(0.9 * 2.5em)" : '0em'}`);
+    }
+
+    function useMarkdown(){
+      let lines = document.getElementById("markdown").value
+      lines = lines.replaceAll('**', '')
+      let html = ""
+
+      const cards = parseMarkdownList(lines)
+      console.log(cards)
+
+      for(let card of cards){
+        let content = ""
+
+        if(card.length > 1) {content = card.slice(1).reduce((a,b) => a + "<br><br>" + b)}
+
+        let newCard = createCard(card[0], content, "")
+        html += newCard
+      }
+
+      document.getElementById('a4').innerHTML = html
+      
+    }
+
+    async function useURL(){
+      let url = document.getElementById('url').value
+      let token = document.getElementById('token').value
+
+      if(token.trim().length < 1) token = false
+
+
+      if(url.includes('github')){
+        let split = url.split('/')
+        let issues = await getGitHubIssues(split[3], split[4], token)
+        let html = ''
+        
+        for(let issue of issues){
+          let newCard = createCard(issue.title, issue.body, issue.created_at)
+          html += newCard
+        }
+
+        document.getElementById('a4').innerHTML = html
+      }
+    }
+
+
+    async function getGitHubIssues(username, repo, token = false) {
+
+        const url = `https://api.github.com/repos/${username}/${repo}/issues?state=open`;
+        const headers = {
+            'User-Agent': 'request',
+        };
+
+        if(token) headers['Authorization'] = 'Bearer ' + token
+
+
+        try {
+            const response = await fetch(url, { headers: headers });
+            const issues = await response.json();
+
+            if(issues.message){
+              document.getElementById('message').innerHTML = issues.message + "!" + " Maybe it's a private repo?"
+              return []
+            }
+
+            else if(issues.length < 1){
+              document.getElementById('message').innerHTML = "No issues currently open" + "!"
+              return []
+            }
+
+            else{
+              document.getElementById('message').innerHTML = "Fetched " + issues.length + " issues."
+              return issues.map(issue => ({
+                  number: issue.number,
+                  url: issue.url,
+                  title: issue.title,
+                  created_by: issue.user.login,
+                  user_profile_link: issue.user.html_url,
+                  labels: issue.labels,
+                  created_at: issue.created_at,
+                  body: issue.body
+              }));
+            }
+
+        } catch (error) {
+            console.error(`Error fetching GitHub issues: ${error.message}`);
+            return [];
+        }
+    }
+
+    function createCard(title, content, meta){
+      return `<div class=card><div class=title><h2>${title}</h2></div>
+<div class=content>${content}<div class=content-padding></div></div>
+<div class=meta>${meta}</div>
+</div>`
+    }
+
+    function parseMarkdownList(text){
+        const lines = text.split('\n');
+        const result = [];
+        let currentItem = [];
+
+        lines.forEach(line => {
+            if (/^[\-\*]\s+.*/.test(line)) { 
+                if (currentItem.length > 0) {
+                    result.push(currentItem);
+                    currentItem = [];
+                }
+                currentItem.push(line.trim().substring(2));
+            } else if (/^(\s{2,}|\t+).*/.test(line) && currentItem.length > 0) { 
+                if(line.trim()[0] == "-" || line.trim()[0] == "*"){
+                  line = line.trim().substring(2)
+                }
+
+                else{
+                   line = line.trim()
+                }
+
+                currentItem.push(line);
+            }
+        });
+
+        if (currentItem.length > 0) {
+            result.push(currentItem);
+        }
+
+        return result;
+    }
+
+
+    </script>
+</body>
+</html>
