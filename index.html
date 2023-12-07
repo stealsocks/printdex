@@ -44,11 +44,12 @@
       nav h1{
         display: inline-block;
         margin: 0px;
+        font-size: 1rem;
       }
 
       .ui{
         margin: 4rem 0rem;
-        width: 30rem;
+        width: 34rem;
         display: inline-block;
         text-align: left;
         line-height: 1.5em;
@@ -64,7 +65,7 @@
         height: 15rem;
         resize: vertical;
         padding: 1em 0.75em;
-        line-height: 1.7em;
+        line-height: 1.5em;
       }
 
       details{
@@ -246,7 +247,18 @@
 
     <details>
       <summary>Markdown list format</summary>
-      <p><textarea id=markdown placeholder="- list item 1" spellcheck="false"></textarea> </p>
+      <p><textarea id=markdown placeholder="- list item 1" spellcheck="false">- hey there
+  - This is Printdex, a small app for making index cards out of things that can be made into index cards.
+
+- these are some sample cards
+  - They an have a title, content, and some metadata.
+
+- The idea is, you paste in a link to a Github repo
+  - And the app fetches all the issues and converts them to a print-friendly layout.
+
+- i'm also thinking about what other apps could be connected in a similar manner
+  - Maybe CSVs? Todoist items?
+  </textarea> </p>
     </details>
 
     <br>
@@ -285,6 +297,8 @@
 
     <button onclick="printSVG()">Print cards</button>
   </div>
+
+  <br>
 
     <div id="a4">
         
@@ -427,7 +441,9 @@
       }
 
       document.getElementById('a4').innerHTML = html
-      
+      let includeMeta = document.getElementById('meta-check').checked = false
+      modifyCard()
+        
     }
 
     async function useURL(){
