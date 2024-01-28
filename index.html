@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title> Printdex </title>
-    <meta name="description" content="A guide to getting the most out of Streams.">
+    <meta name="description" content="Printing stuff.">
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <style>
@@ -26,6 +26,8 @@
         box-sizing: border-box;
       }
 
+
+
       body{
         text-align: center;
         font-size: 18px;
@@ -45,6 +47,10 @@
         display: inline-block;
         margin: 0px;
         font-size: 1rem;
+      }
+
+      .printme{
+        display: none;
       }
 
       .ui{
@@ -225,8 +231,17 @@
             border: none; /* Remove border for printing */
         }
     }
+
+    @media print {
+      .no-printme  {
+        display: none;
+      }
+      .printme  {
+        display: block;
+      }
+    }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script> -->
 </head>
 <body>
   <nav>
@@ -300,7 +315,7 @@
 
   <br>
 
-    <div id="a4">
+    <div id="a4" class=printme>
         
         <div class=card>
           <div class=title>
@@ -365,18 +380,21 @@
 
       function printSVG(){
           let node = document.getElementById('a4');
+          window.print()
 
-          domtoimage.toSvg(node)
-            .then(function (dataUrl) {
-                let img = new Image();
-                img.src = dataUrl;
-                img.id = "output"
-                document.body.appendChild(img);
-                openPage('output')
-            })
-            .catch(function (error) {
-                console.error('oops, something went wrong!', error);
-            });
+          // domtoimage.toSvg(node)
+          //   .then(function (dataUrl) {
+          //       let img = new Image();
+          //       img.src = dataUrl;
+          //       img.id = "output"
+          //       img.class = 'printme'
+          //       document.body.appendChild(img);
+          //       window.print()
+          //       // openPage('output')
+          //   })
+          //   .catch(function (error) {
+          //       console.error('oops, something went wrong!', error);
+          //   });
       }
        
       
