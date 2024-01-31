@@ -549,7 +549,7 @@
         menu.innerHTML = ""
 
         if(menuName == 'text'){
-          let text = localStorage.getItem('text-list') ?? undefined
+          let text = localStorage.getItem('text-list') ?? ""
           text = text.length > 0 ? text : "- Top-level items are titles.\n  - Indented items are used as card content\n\n- Each item is one card.\n  - You can write a really long sentence here as the card content. Just no line-breaks :("
           van.add(menu, () => TextMenu(text))
         }
