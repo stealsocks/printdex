@@ -884,9 +884,8 @@
         var element = document.querySelector('.preview');
         element.style.border = "none"
         let pdf = html2pdf(element)
-        pdf.output('dataurlnewwindow');
+        pdf.output('dataurlnewwindow', "Printdex - " + (Date.now() - 1706731631353));
         element.style.border = "solid 0.5px black"
-        // pdf.save("Your cards – " + (Date.now() - 1706731631353));
       }
     
     </script>
