@@ -241,7 +241,7 @@
 
       .preview{
         max-width: 793px;
-        border: solid 1px black;
+        border: solid 0.5px black;
 /*        display: flex;*/
 /*        flex-wrap: wrap;*/
       }
@@ -486,7 +486,7 @@
           <div style="display: inline-block;">
             This is just a preview, the actual cards will be sized to fit perfectly on A4 size sheets of paper..
           </div>
-          <button style="width: 10em; flex-shrink: 0; height: 2.5em;" onclick="handlePrint()"> Download PDF </button>
+          <button style="width: 10em; flex-shrink: 0; height: 2.5em;" onclick="handlePrint()"> View PDF </button>
         </div>
         <div class="preview" id=preview></div>
       </div>
@@ -882,8 +882,11 @@
 
       function handlePrint(){
         var element = document.querySelector('.preview');
+        element.style.border = "none"
         let pdf = html2pdf(element)
-        pdf.save("Your cards – " + (Date.now() - 1706731631353));
+        pdf.output('dataurlnewwindow');
+        element.style.border = "solid 0.5px black"
+        // pdf.save("Your cards – " + (Date.now() - 1706731631353));
       }
     
     </script>
