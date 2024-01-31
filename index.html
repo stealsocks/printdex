@@ -349,12 +349,18 @@
           width: 100%;
           height: fit-content;
           border-bottom: solid 1px var(--light-border);
+          overflow: visible;
         }
       }
 
       @media screen and (max-width: 700px){
         body{
           display: block;
+          overflow: visible;
+        }
+
+        #ui{
+          overflow: visible;
         }
 
         .sidebar{
@@ -875,9 +881,9 @@
       }
 
       function handlePrint(){
-        console.log("printing")
         var element = document.querySelector('.preview');
-        let pdf = html2pdf(element).save();
+        let pdf = html2pdf(element)
+        pdf.save("Your cards – " + (Date.now() - 1706731631353));
       }
     
     </script>
