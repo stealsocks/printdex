@@ -1,575 +1,860 @@
-<!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <head>
     <title> Printdex </title>
-    <meta name="description" content="Printing stuff.">
     <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180"  href="card.png"> 
+    <link rel="icon" type="image/png" sizes="32x32" href="card.png"> 
+    <link rel="icon" type="image/png" sizes="16x16"  href="card.png"> 
+
+      <!-- Facebook Open Graph tags -->
+    <meta property="og:url" content="https://printdex.joodaloop.com" />
+    <meta property="og:title" content="Printdex" />
+    <meta property="og:description" content="Create printable index cards from lists, CSVs, or Github Issues." />
+    <meta property="og:image" content="https://printdex.joodaloop.com/card.png" />
+
+    <!-- Twitter Card (large image card) tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:creator" content="@joodaloop">
+    <meta name="twitter:title" content="Printdex">
+    <meta name="twitter:description" content="Create printable index cards from lists, CSVs, or Github Issues." />
+    <meta name="twitter:image" content="https://printdex.joodaloop.com/card.png" />
+
+      <meta name="description" content="Create printable index cards from lists, CSVs, or Github Issues.">
+    <script type="text/javascript" src="./scripts/van.js"></script>
+    <script type="text/javascript" src="./scripts/papaparse.js"></script>
+
     <style>
 
-      :root{
-        --card-width: 50%;
-        --card-height: 280.5px;
-        --font-size: 16px;
-        --card-color: #444;
-        --card-background: #fdfdfd;
-        --title-visible: 'inline-block';
-        --content-visible: 'inline-block';
-        --meta-visible: 'inline-block';
-        --fade-position: calc(0.9 * 2.5em);
+      @font-face {
+        font-family: 'General Sans';
+        font-style: normal;
+        src: url('./fonts/General Sans.ttf');
+         font-display: swap;
+         font-weight: 1 999;  
       }
+
+      @font-face {
+        font-family: 'Sentient';
+        font-style: normal;
+        src: url('./fonts/Sentient.woff2');
+         font-display: swap;
+         font-weight: 1 999;  
+      }
+
+      @font-face {
+        font-family: 'Lora';
+        font-style: normal;
+        src: url('./fonts/Lora.woff2');
+         font-display: swap;
+         font-weight: 1 999;  
+      }
+
+      @font-face {
+        font-family: 'Satoshi';
+        font-style: normal;
+        src: url('./fonts/Satoshi.woff2');
+         font-display: swap;
+         font-weight: 1 999;  
+      }
+
 
       *{
         box-sizing: border-box;
+        position: relative;
+        vertical-align: top;
       }
 
+      :root{
+        --bg: white;
+        --light-border: #ddd;
+        --card-width: 50%;
+        --card-height: 280.5px;
+        --card-font: inherit;
+        --card-color: #444;
+        --card-bg: #FFF;
+        --card-size: 16px;
 
+        --sidebar-display: none;
+        --content-display: inline-block;
+        --metadata-display: inline-block;
+      }
+
+      ::placeholder{
+        color: #bbb;
+      }
 
       body{
-        text-align: center;
-        font-size: 18px;
-        min-width: fit-content;
-        font-family: Helvetica Nueu, system-ui;
-        padding-bottom: 4rem;
+        font-family: General Sans, system-ui;
+        color: #555;
+        display: flex;
         margin: 0px;
       }
 
-      nav{
-        margin: 0px;
-        text-align: left;
-        padding: 10px;
+      h1{
+        font-size: 1em;
+        width: fit-content;
       }
 
-      nav h1{
+      p{
+        margin-bottom: 1.5em;
+      }
+
+      button{
+        background: #fff;
+        border: solid 1px #444;
+        border-radius: 0px;
+      }
+
+      button:hover{
+        transform: scale(0.98);
+      }
+
+      *:first-child{
+        margin-top: 0px;
+      }
+
+      .mobile-top{
+        display: none;
+      }
+
+      .sidebar{
+        width: 16rem;
+        padding: 1.2em;
+        border-right: solid 1px var(--light-border);
         display: inline-block;
-        margin: 0px;
-        font-size: 1rem;
+        background: var(--bg);
+        flex-shrink: 0;
+      }
+
+      select{
+        padding: 0.7em;
+        width: 100%;
+      }
+
+      #ui{
+        width: 100%;
+      }
+
+      .content{
+        width: 28rem;
+        border-right: solid 1px var(--light-border);
+        height: 100vh;
+        display: inline-block;
+        padding: 1.5em;
+        flex-shrink: 0;
+        font-size: 14px;
+        background: #eee;
+      }
+
+      .text-menu textarea{
+        width: 100%;
+        padding: 1em;
+        min-height: 40em;
+        font-family: inherit;
+        resize: vertical;
+        border: solid 1px var(--light-border);
+        border-radius: 4px;
+        line-height: 1.6em;
+        font-family: monospace;
+        outline: none;
+      }
+
+      .flex{
+        width: 100%;
+        gap: 6px;
+        display: flex;
+      }
+
+      .flex input{
+        width: 70%;
+        padding: 0.7em;
+      }
+
+      .flex button{
+        width: 30%;
+        padding: 0.7em;
+      }
+
+      .file-input-label{
+        width: 70%;
+        font-size: 1em;
+        display: inline-block;
+        border: solid 1px #444;
+        padding: 0.7em;
+        background: var(--bg);
+      } 
+
+      .file-input-label:hover{
+        opacity: 0.7;
+      }
+
+      .flex input[type=file]{
+        display: none;
+      }
+
+      .about, .settings{
+        font-size: 0.9em;
+      }
+
+      .settings button{
+        display: block;
+        width: 100%;
+        padding: 0.75em 0.5em;
+        margin: 1em 0em;
+        background: #f5f5f5;
+        border: solid 1px #ddd;
+        border-radius: 4px;
+        color: #666;
+        transform: none;
+      }
+
+      .settings button:hover{
+        color: #000;
+        background: #f2f2f2;
+      }
+
+      input[type=checkbox]{
+        vertical-align: middle;
+        margin-right: 0.5em;
+      }
+
+      .preview-holder{
+        display: inline-block;
+        width: calc(100% - 28.5rem);
+        height: 100vh;
+        padding: 1.5em;
+        overflow: auto;
+      }
+
+      .preview{
+        max-width: 793px;
+        border: solid 1px black;
+/*        display: flex;*/
+/*        flex-wrap: wrap;*/
       }
 
       .printme{
-        display: none;
-      }
-
-      .ui{
-        margin: 4rem 0rem;
-        width: 34rem;
-        display: inline-block;
-        text-align: left;
-        line-height: 1.5em;
-      }
-
-      .check-boxes{
-        width: 100%;
-        padding: 0rem 0rem 2rem 0rem;
-      }
-
-      textarea{
-        width: 100%;
-        height: 15rem;
-        resize: vertical;
-        padding: 1em 0.75em;
-        line-height: 1.5em;
-      }
-
-      details{
-        border: solid 2px black;
-        padding: 1em;
-      }
-
-      summary{
-        cursor: pointer;
-      }
-
-      details p{
-        margin: 1em 0em 0em 0em;
-      }
-
-    #a4 {
         width: 793px;
-/*        height: 1122px;*/
-        font-size: 0px;
-        line-height: 0px;
-        display: inline-flex;
-        flex-wrap: wrap;
-        text-align: left;
-        flex-direction: row;
-    }
+      }
 
-    .card{
-      width: var(--card-width);
-      height: var(--card-height);
-      font-size: var(--font-size);
-      background: var(--card-background);
-      color: var(--card-color);
-      margin: 0px;
-      border: 1px dotted #444;
-      line-height: 1.4em;
-      display: inline-block;
-      padding: 1.5em;
-      position: relative;
-      overflow: hidden;
-      /* These are technically the same, but use both */
-      overflow-wrap: break-word;
-      word-wrap: break-word;
+      .preview:empty{
+        height: 1000px;
+      }
 
-      -ms-word-break: break-all;
-      /* This is the dangerous one in WebKit, as it breaks things wherever */
-      word-break: break-all;
-      /* Instead use this non-standard one: */
-      word-break: break-word;
+      .card{
+        width: var(--card-width);
+        padding: 1.5rem;
+        display: inline-block;
+        height: var(--card-height);
+        overflow: hidden;
+        font-family: var(--card-font);
+        border: solid 0.5px var(--card-color);
+        background: var(--card-bg);
+        color: var(--card-color);
+        font-size: var(--card-size);
+      }
 
-      /* Adds a hyphen where the word breaks, if supported (No Blink) */
-      -ms-hyphens: auto;
-      -moz-hyphens: auto;
-      -webkit-hyphens: auto;
-      hyphens: auto;
-    }
+      .card-title{
+        font-size: 1.2em;
+        margin-bottom: 1em;
+        font-weight: 800;
+      }
 
-    h2{
-      margin: 0px;
-      margin-bottom: 1em;
-      line-height: 1.2em;
-    }
+      .card-content{
+        font-size: 0.8em;
+        margin-bottom: 1em;
+        display: var(--content-display);
+      }
 
-    h3{
-      text-align: center;
-    }
+      .card:after{
+        content: ' ';
+        width: 100%;
+        height: 1.5em;
+        display: inline-block;
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        background: var(--card-bg);
+        z-index: 1;
+      }
 
-    p{
-      margin: 0px 0px 1.5em 0px;
-      word-wrap: break-word;
-    }
+      .card-metadata{
+        font-size: 0.85rem;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+/*        border-top: dashed 1px #444;*/
+        background: var(--card-bg);
+        padding: 1.2em;
+        text-align: right;
+        display: var(--metadata-display);
+        z-index: 2;
+      }
 
-    label{
-      font-weight: 800;
-    }
+      #toast-holder{
+        position: fixed;
+        display: inline-block;
+        bottom: 1em;
+        left: 1em;
+        z-index: 1000;
+      }
 
-    select{
-      padding: 4px;
-    }
+      .toast{
+        padding: 1em;
+        border: solid 1px #444;
+        background: #444;
+        color: white;
+        max-width: 18em;
+        font-size: 0.9em;
+      }
 
-    input[type=text]{
-      padding: 6px;
-      font-size: inherit;
-      width: 100%;
-      margin: 5px 0px;
-    }
-
-
-    input[type='number']{
-      width: 50px;
-      padding: 4px;
-    }
-
-    input[type='number']:focus{
-/*      outline: solid 1px rgba(200, 200, 200, 1);*/
-    }
-
-    button{
-      padding: 15px;
-      width: 100%;
-      background: #222;
-      color: #eee;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-
-    .title{
-      height: fit-content;
-      display: var(--title-visible);
-      width: 100%;
-    }
-
-    .content{
-      display: var(--content-visible);
-    }
-
-    .content-padding{
-      position: absolute;
-      bottom: var(--fade-position);
-      left: 0px;
-      width: 100%;
-      height: 1.5em;
-      background: #fdfdfd;
-    }
-
-    .meta{
-      display: var(--meta-visible);
-      position: absolute;
-      bottom: 0px;
-      left: 0px;
-      border-top: black 1px dotted;
-      height: 2.5em;
-      width: 100%;
-      background: white;
-      padding: 0.5em 1em 0em 1em;
-      font-size: 0.9em;
-      text-align: right;
-      overflow: hidden;
-    }
-
-    .meta div{
-      display: inline-block;
-    }
-
-    @media print {
-        body * {
-            visibility: hidden;
-            margin: 0px;
-        }
-        #a4, #a4 * {
-            visibility: visible;
-        }
-        #a4 {
-            position: absolute;
-            left: 0;
-            top: 0;
-            border: none; /* Remove border for printing */
-        }
-    }
-
-    @media print {
-      .no-printme  {
+      .printme {
         display: none;
       }
-      .printme  {
-        display: block;
+
+      input[type=color]{
+        margin-right: 0.5em;
+        vertical-align: middle;
       }
-    }
+
+      @media screen and (max-width: 1000px){
+
+        #ui{
+          display: inline-block;
+          overflow: auto;
+          height: 100vh;
+        }
+
+        .preview-holder{
+          width: 100%;
+          height: fit-content;
+          overflow: visible;
+        }
+
+        .content{
+          width: 100%;
+          height: fit-content;
+          border-bottom: solid 1px var(--light-border);
+        }
+      }
+
+      @media screen and (max-width: 700px){
+        body{
+          display: block;
+        }
+
+        .sidebar{
+          display: var(--sidebar-display);
+          width: 100%;
+          border: none;
+          border-bottom: solid 1px var(--light-border);
+          padding: 2em 1.5em;
+        }
+
+        .mobile-top{
+          display: block;
+          padding: 1em;
+          border: none;
+          border-bottom: solid 1px var(--light-border);
+        }
+
+        .mobile-top h1{
+          margin: 0px;
+        }
+
+        #switch{
+          position: absolute;
+          top: 1em;
+          right: 1em;
+          height: 2em;
+        }
+      }
+
+      @media print {
+        .no-printme{
+          display: none;
+        }
+        .printme  {
+          display: block !important;
+          background: var(--card-bg);
+        }
+      }
     </style>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script> -->
-</head>
-<body>
-  <nav>
-    <h1> Printdex </h1>
-  </nav>
 
-  <div class=ui>
+  </head>
 
-    <details>
-      <summary>Github Issues</summary>
-      <p></p>
-        <input type=text id=url placeholder="https://github.com/username/repo-name">
-        <input type=text id=token placeholder="Access token if private repo">
-        <div id=message style="font-size:14px"></div>
-    </details>
-    
-    <h3> Or </h3>
+  <body>
 
-    <details>
-      <summary>Markdown list format</summary>
-      <p><textarea id=markdown placeholder="- list item 1" spellcheck="false">- hey there
-  - This is Printdex, a small app for making index cards out of things that can be made into index cards.
-
-- these are some sample cards
-  - They an have a title, content, and some metadata.
-
-- The idea is, you paste in a link to a Github repo
-  - And the app fetches all the issues and converts them to a print-friendly layout.
-
-- i'm also thinking about what other apps could be connected in a similar manner
-  - Maybe CSVs? Todoist items?
-  </textarea> </p>
-    </details>
-
-    <br>
-    <br>
-
-    <p>
-      On each page, I want to have <select id=horizontal-count>
-        <option value=1> 1 </option>
-        <option value=2 selected> 2 </option>
-      </select> cards per row, and 
-
-      <select id=vertical-count>
-        <option value=2> 2 </option>
-        <option value=3> 3 </option>
-        <option value=4 selected> 4 </option>
-        <option value=5> 5 </option>
-        <option value=6> 6 </option>
-        <option value=7> 7 </option>
-        <option value=8> 8 </option>
-      </select> cards per column.
-
-     With the font size set to <input type=number id=font-size value=16>
-    </p>
-
-    <p> I want the cards to have a 
-     <input type="checkbox" id="title-check" name="title" value="true" checked=true>
-     <label for="title"> Title</label>, as well as any existing content
-
-     <input type="checkbox" id="content-check" name="content" value="true" checked=true>
-     <label for="content"> Content</label>, and relevant
-
-     <input type="checkbox" id="meta-check" name="meta" value="true" checked=true>
-     <label for="meta"> Metadata</label>.
-   </p>
-
-
-    <button onclick="printSVG()">Print cards</button>
-  </div>
-
-  <br>
-
-    <div id="a4" class=printme>
-        
-        <div class=card>
-          <div class=title>
-            <h2> hey there </h2>
-          </div>
-          <div class=content>
-            <p> This is Printdex, a small app for making index cards out of things that can be made into index cards. </p>
-            <div class=content-padding></div>
-          </div>
-          <div class=meta>06-12-2023</div>
-        </div>
-        <div class=card>
-          <div class=title>
-            <h2> these are some sample cards </h2>
-          </div>
-          <div class=content>
-            <p> They an have a title, content, and some metadata. </p>
-            <div class=content-padding></div>
-          </div>
-          <div class=meta>Right now</div>
-        </div>
-
-        <div class=card>
-          <div class=title>
-            <h2> The idea is, you paste in a link to a Github repo </h2>
-          </div>
-          <div class=content>
-            <p> And the app fetches all the issues and converts them to a print-friendly layout. </p>
-            <div class=content-padding></div>
-          </div>
-          <div class=meta>Soon</div>
-        </div>
-
-        <div class=card>
-          <div class=title>
-            <h2> i'm also thinking about what other apps could be connected in a similar manner </h2>
-          </div>
-          <div class=content>
-            <p> Maybe CSVs? Todoist? Markdown lists? </p>
-            <div class=content-padding></div>
-          </div>
-          <div class=meta>the future</div>
-        </div>
-
+    <div class=mobile-top> 
+      <button id=switch onclick="toggleSidebar()"> MENU </button>
+      <h1>Printdex</h1>
     </div>
 
+    <div class="sidebar no-printme">
+
+      <div class=about>
+        <p> This is one of my "tiny tools", an app to help you print out different kinds of index cards. </p>
+      </div>
+
+      <div class=settings>
+        <button onclick="switchMenus('text')"> Simple list </button>
+        <button onclick="switchMenus('csv')"> CSV </button>
+        <button onclick="switchMenus('github')"> Github Issues </button>
+        <!-- <button onclick="switchMenus('linear')"> Linear Issues </button> -->
+        <!-- <button> Todoist tasks </button> -->
+        <!-- <button> Trello boards </button> -->
+      </div>
+      <br>
+
+      <div class=settings>
+        <h3> Preferences </h3>
+        <div>
+          <select onchange="setStyles()" id="font-family">
+            <option value="General Sans"> General Sans </option>
+            <option value="Helvetica"> Helvetica </option>
+            <option value="Sentient"> Sentient </option>
+            <option value="Satoshi"> Satoshi </option>
+            <option value="Lora"> Lora </option>
+          </select>
+        </div>
+        <br>
+        <div> 
+          <input style="padding: 4px; margin-top: 0px; width: 3.75em; vertical-align: middle; margin-right: 0.5em;" type="number" id=font-size value="16" oninput="setStyles()"> Font size
+        </div>
+        <br>
+        <div> <input type="color" id=background-color value="#FFFFFF" oninput="setStyles()"> Card background </div>
+        <br>
+        <div> <input type="color" id=font-color value="#444444" oninput="setStyles()"> Card text </div>
+        <br>
+
+        <div style='margin-bottom: 5px;'>Cards per page:</div>
+        <select onchange="setStyles()" id="card-count">
+          <option value="2"> 4 </option>
+          <option value="3"> 6 </option>
+          <option value="4" selected=true> 8 </option>
+          <option value="5"> 10 </option>
+          <option value="6"> 12 </option>
+          <option value="7"> 14 </option>
+          <option value="8"> 16 </option>
+        </select>
+        <p style="font-size: 14px;"> <b>Note:</b> If you want to print out cards with backgrounds other than white, you need to enable the <u> Background graphics </u> option in your browser's "Print" settings. </p>
+      </div>
+
+      <div class=settings>
+        <div style="margin-bottom: 8px"> <input type=checkbox id='show-content' checked=true oninput="setStyles()"> Content </div>
+        <div> <input type=checkbox id='show-meta' checked=true oninput="setStyles()"> Metadata </div>
+      </div>
+    </div>
+
+    <div id=ui class=no-printme>
+      <div class=content id=menu>
+        <h2> What the heck is an index card? </h2>
+      </div>
+
+      <div class=preview-holder>
+        <div style="display: flex; padding-bottom: 2em; width: 100%; font-size: 14px; gap: 10%">
+          <div style="display: inline-block;">
+            This is just a preview, the actual cards will be sized to fit perfectly on A4 size sheets of paper when you hit "Print".
+          </div>
+          <button style="width: 7em; flex-shrink: 0; height: 2.5em;" onclick="window.print()"> Print </button>
+        </div>
+        <div class="preview" id=preview></div>
+      </div>
+
+      <div id=toast-holder></div>
+    </div>
+
+    <div class="svg printme" id="to-print"></div>
+
     <script>
-      const a4height = 1122
-      document.getElementById('vertical-count').addEventListener('change', modifyCard)
-      document.getElementById('horizontal-count').addEventListener('change', modifyCard)
-      document.getElementById('font-size').addEventListener('change', modifyCard)
 
-      document.getElementById('title-check').addEventListener('input', modifyCard)
-      document.getElementById('content-check').addEventListener('input', modifyCard)
-      document.getElementById('meta-check').addEventListener('input', modifyCard)
+      const ui = document.getElementById('ui')
+      const preview = document.getElementById('preview')
+      const toPrint = document.getElementById('to-print')
+      const toastHolder = document.getElementById('toast-holder')
+      const menu = document.getElementById('menu')
+      const root = document.documentElement;
+      const {button, div, pre, h2, textarea, input, label, p} = van.tags
 
-      document.getElementById('url').addEventListener('change', useURL)
-      document.getElementById('token').addEventListener('change', useURL)
-      document.getElementById('markdown').addEventListener('input', useMarkdown)
+      let sidebarVisible = false
+      let toastTimeout
 
-
-
-      function printSVG(){
-          let node = document.getElementById('a4');
-          window.print()
-
-          // domtoimage.toSvg(node)
-          //   .then(function (dataUrl) {
-          //       let img = new Image();
-          //       img.src = dataUrl;
-          //       img.id = "output"
-          //       img.class = 'printme'
-          //       document.body.appendChild(img);
-          //       window.print()
-          //       // openPage('output')
-          //   })
-          //   .catch(function (error) {
-          //       console.error('oops, something went wrong!', error);
-          //   });
-      }
-       
-      
-      function openPage(svgId) {
-        let svgElement = document.getElementById(svgId);
-        let svgHTML = svgElement.outerHTML;
-        let printWindow = window.open('', '_blank', 'height=200,width=300');
-
-        printWindow.document.write('<html><head><title>Print</title>');
-        // Include any stylesheets or specific styles here
-        printWindow.document.write('</head><body style="margin:0px">');
-        printWindow.document.write(svgHTML);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-
-        // Wait for the content to load before printing
-        printWindow.onload = function() {
-            printWindow.focus(); // Required for some browsers
-            printWindow.print();
-            printWindow.close();
-        };
-
-        svgElement.remove()
-    }
-
-
-    function modifyCard(newHeight, newWidth) {
-        let vCount = document.getElementById('vertical-count').value
-        let hCount = document.getElementById('horizontal-count').value
-        let fSize = Number(document.getElementById('font-size').value) || 18
-
-        let includeTitle = document.getElementById('title-check').checked
-        let includeContent = document.getElementById('content-check').checked
-        let includeMeta = document.getElementById('meta-check').checked
-
-        document.documentElement.style.setProperty('--card-height', `${a4height/vCount}px`);
-        document.documentElement.style.setProperty('--card-width', `${100/hCount}%`);
-        document.documentElement.style.setProperty('--font-size', `${fSize}px`);
-
-        document.documentElement.style.setProperty('--title-visible', `${includeTitle ? 'inline-block' : 'none'}`);
-        document.documentElement.style.setProperty('--content-visible', `${includeContent ? 'inline-block' : 'none'}`);
-        document.documentElement.style.setProperty('--meta-visible', `${includeMeta ? 'inline-block' : 'none'}`);
-
-        document.documentElement.style.setProperty('--fade-position', `${includeMeta ? "calc(0.9 * 2.5em)" : '0em'}`);
-    }
-
-    function useMarkdown(){
-      let lines = document.getElementById("markdown").value
-      lines = lines.replaceAll('**', '')
-      let html = ""
-
-      const cards = parseMarkdownList(lines)
-      console.log(cards)
-
-      for(let card of cards){
-        let content = ""
-
-        if(card.length > 1) {content = card.slice(1).reduce((a,b) => a + "<br><br>" + b)}
-
-        let newCard = createCard(card[0], content, "")
-        html += newCard
+      let TextMenu = (text = "- Top-level items are titles.\n  - Indented items are used as card content\n\n- Each item is one card.\n  - You can write a really long sentence here as the card content. Just no line-breaks :(") => {
+        return div(
+          {class: 'text-menu'},
+          h2('Simple list'),
+          p('Each new line should start with a hyphen (-).'),
+          textarea({value: text, id: 'text-list', oninput: listToCards, onkeydown: (e) => { if(e.key == "Tab") handleTab(e) }}),
+        )
       }
 
-      document.getElementById('a4').innerHTML = html
-      let includeMeta = document.getElementById('meta-check').checked = false
-      modifyCard()
-        
-    }
+      let CSVMenu = () => {
+        return div(
+          h2('CSV file'),
+          div({class: 'flex'}, 
+            label({class: 'file-input-label', for: 'csv-input'}, 'Add your CSV File'),
+            input({ type: 'file', accept: ".csv", id: 'csv-input', oninput: setFileName }),
+            button({onclick: convertCSV}, 'Create cards')
+          ),
+          p(`Your CSV will be converted into cards by using the first column for the titles, second column for content, and the third for metadata.`),
+        )
+      }
 
-    async function useURL(){
-      let url = document.getElementById('url').value
-      let token = document.getElementById('token').value
+      let GithubMenu = () => {
+        return div(
+          h2('Github Issues'),
+          div({class: 'flex'}, 
+            input({ placeholder: 'github.com/tldraw/tldraw', class: 'full', id: 'github-url', value: "https://github.com/tldraw/tldraw" }),
+            button({ onclick: getGitHubIssues },"Fetch issues")
+          ),
+          p(`Fetching issues from public repositories should "just work", unless this site has been rate-limited. In which case you'll need to create a Personal Access Token and paste it in below. You also need a PAT if your repo is private.`),
+          p(`This app is a single, static index.html pages and works fully from your browser, so your token is never sent anywhere except Github's servers.`),
+          div({class: 'flex'},
+            input({ placeholder: 'ghp_seQefisuUHsesegwghiEOhefekKMF2M0Usy3v6RkG', class: 'full', id: 'github-token', style: 'width: 100%'})
+          )
+        )
+      }
 
-      if(token.trim().length < 1) token = false
+      let LinearMenu = () => {
+        return div(
+          h2('Linear Issues'),
+          div({class: 'flex'}, 
+            input({ placeholder: 'lin_api_uehighWEIhhtisehIHEIUthesgesi', class: 'full' }),
+            button("Fetch issues")
+          ),
+          p(`This app is a single, static index.html pages and works fully from your browser, so your token is never sent anywhere except Linear's servers.`),
+        )
+      }
+
+      let TodoistMenu = () => {
+        return div(
+          h2('Todoist Tasks'),
+          div({class: 'flex'}, 
+            input({ placeholder: 'Todoist API token', class: 'full' }),
+            button("Get tasks")
+          ),
+          p('To get your API token,'),
+          p(`This app is a single, static index.html pages and works fully from your browser, so your token is never sent anywhere except Linear's servers.`),
+        )
+      }
 
 
-      if(url.includes('github')){
-        let split = url.split('/')
-        let issues = await getGitHubIssues(split[3], split[4], token)
-        let html = ''
-        
-        for(let issue of issues){
-          let newCard = createCard(issue.title, issue.body, issue.created_at)
-          html += newCard
+      function switchMenus(menuName){
+
+        menu.innerHTML = ""
+
+        if(menuName == 'text'){
+          let text = localStorage.getItem('text-list') ?? undefined
+          text = text.length > 0 ? text : "- Top-level items are titles.\n  - Indented items are used as card content\n\n- Each item is one card.\n  - You can write a really long sentence here as the card content. Just no line-breaks :("
+          van.add(menu, () => TextMenu(text))
         }
 
-        document.getElementById('a4').innerHTML = html
+        else if(menuName == 'csv'){
+          van.add(menu, CSVMenu)
+        }
+
+        else if(menuName == 'github'){
+          van.add(menu, GithubMenu)
+        }
+
+        else if(menuName == 'linear'){
+          van.add(menu, LinearMenu)
+        }
+
       }
-    }
+
+      switchMenus('text')
+      listToCards()
 
 
-    async function getGitHubIssues(username, repo, token = false) {
+      const apiKey = 'lin_api_M6RpdJYPIIgJPe9Ww8AkTwrh5fQBjZXJLMlHlr4w';
+      const apiUrl = 'https://api.linear.app/graphql';
 
-        const url = `https://api.github.com/repos/${username}/${repo}/issues?state=open`;
+      const graphqlQuery = '{ "query": "{ issues { nodes { id title } } }" }';
+
+      function renderCards(cards){
+        let layout = 'classic'
+        let a4Height = 1122
+        let Card
+
+        preview.innerHTML = ""
+        toPrint.innerHTML = ""
+
+        if(layout == 'strips'){
+          root.style.setProperty('--card-width', '100%');
+
+          Card = (card, dataset) => {
+            return div(
+              {class: 'card', ...dataset}, 
+              div({class: 'card-title'}, card.title),
+            )
+          }
+        }
+
+        else if(layout == 'classic'){
+          root.style.setProperty('--card-width', '50%');
+
+          Card = (card, dataset) => {
+            return div(
+              {class: 'card', ...dataset}, 
+              div({class: 'card-title'}, card.title),
+              div({class: 'card-content'}, card.content),
+              div({class: 'card-metadata'}, card.metadata),
+            )
+          }
+        }
+
+        for(let card of cards){
+
+          let dataset = {}
+
+          if(card.tags){
+            for(let ele of card.tags){
+              dataset["data-" + ele.id] = true
+            }
+          }
+
+          van.add(preview, () => Card(card, dataset))
+          van.add(toPrint, () => Card(card, dataset))
+        }
+       
+      }
+
+      function convertCSV() {
+          const fileInput = document.getElementById('csv-input');
+          const file = fileInput.files[0];
+
+          if(!file) {
+            showToast('Please add a .csv file!')
+            return
+          }
+
+          try{
+
+            Papa.parse(fileInput.files[0], {
+              complete: function(results) {
+                let titles = []
+                let contents = []
+                let metadatas = []
+
+                if(results){
+                    let data = results.data
+                    for(let i = 1; i < data.length; ++i){
+                      titles.push(data[i][0])
+                      contents.push(data[i][1])
+                      metadatas.push(data[i][2])
+                    } 
+
+                    renderCards(createCardsArray(titles, contents, metadatas))
+                  }
+                }
+            });
+          }
+          catch(err){ 
+            showToast(error) 
+          }
+      }
+
+      function getLinearIssues(){
+          fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': apiKey,
+            },
+            body: JSON.stringify(JSON.parse(graphqlQuery)),
+          })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+      }
+
+
+      async function getGitHubIssues() {
+
+        let url = document.getElementById('github-url').value
+        let cards = []
+
+        if(!url.includes('github')){
+          showToast('Please use a valid Github URL.')
+          return
+        }
+
+        let split = url.split('/')
+
+        let token = document.getElementById('github-token').value
+        if(token.trim().length < 1) token = false
+
+        let username = split[3]
+        let repo = split[4]
+
+        let APIRoute = `https://api.github.com/repos/${username}/${repo}`;
         const headers = {
             'User-Agent': 'request',
         };
 
         if(token) headers['Authorization'] = 'Bearer ' + token
 
-
-        try {
-            const response = await fetch(url, { headers: headers });
+        try{
+            const response = await fetch(APIRoute + '/issues?state=open', { headers: headers });
             const issues = await response.json();
 
             if(issues.message){
-              document.getElementById('message').innerHTML = issues.message + "!" + " Maybe it's a private repo?"
-              return []
+              showToast(issues.message)
+              cards = []
             }
 
             else if(issues.length < 1){
-              document.getElementById('message').innerHTML = "No issues currently open" + "!"
-              return []
+              showToast("No open issues found.")
+              cards = []
             }
 
             else{
-              document.getElementById('message').innerHTML = "Fetched " + issues.length + " issues."
-              return issues.map(issue => ({
-                  number: issue.number,
-                  url: issue.url,
-                  title: issue.title,
-                  created_by: issue.user.login,
-                  user_profile_link: issue.user.html_url,
-                  labels: issue.labels,
-                  created_at: issue.created_at,
-                  body: issue.body
-              }));
+              showToast( "Fetched " + issues.length + " issues.")
+              cards = issues.map(issue => ({
+                title: issue.title,
+                content: issue.body,
+                metadata: issue.created_at.slice(0,10),
+                tags: issue.labels
+              }))
             }
-
-        } catch (error) {
-            console.error(`Error fetching GitHub issues: ${error.message}`);
-            return [];
         }
-    }
-
-    function createCard(title, content, meta){
-      return `<div class=card><div class=title><h2>${title}</h2></div>
-<div class=content>${content}<div class=content-padding></div></div>
-<div class=meta>${meta}</div>
-</div>`
-    }
-
-    function parseMarkdownList(text){
-        const lines = text.split('\n');
-        const result = [];
-        let currentItem = [];
-
-        lines.forEach(line => {
-            if (/^[\-\*]\s+.*/.test(line)) { 
-                if (currentItem.length > 0) {
-                    result.push(currentItem);
-                    currentItem = [];
-                }
-                currentItem.push(line.trim().substring(2));
-            } else if (/^(\s{2,}|\t+).*/.test(line) && currentItem.length > 0) { 
-                if(line.trim()[0] == "-" || line.trim()[0] == "*"){
-                  line = line.trim().substring(2)
-                }
-
-                else{
-                   line = line.trim()
-                }
-
-                currentItem.push(line);
-            }
-        });
-
-        if (currentItem.length > 0) {
-            result.push(currentItem);
+        catch(error) {
+            showToast(`Error fetching GitHub issues: ${error.message}`);
+            cards = []
         }
 
-        return result;
-    }
+        renderCards(cards)
+        for(let ele of cards){
+          document.getElementById('')
+          let dataset = {}
+          for(let ele of card.tags){
+            dataset["data-" + ele.id] = true
+          }
+        }
+      }
+
+      function createCardsArray(titles, contents, metadates) {
+            const cardsArray = [];
+
+            if (titles.length === contents.length && contents.length === metadates.length) {
+                for (let i = 0; i < titles.length; i++) {
+                    const card = {
+                        title: titles[i],
+                        content: contents[i],
+                        metadata: metadates[i]
+                    };
+                    cardsArray.push(card);
+                }
+            } else {
+                console.error("Arrays have different lengths. Unable to create cards.");
+            }
+
+            return cardsArray;
+        }
 
 
+      function listToCards(){
+
+        if(document.getElementById('text-list')){
+          localStorage.setItem('text-list', document.getElementById('text-list').value)
+        }
+        
+        let lines = document.getElementById("text-list").value
+        let html = ""
+
+        const cards = parseMarkdownList(lines)
+        console.log(cards)
+
+        renderCards(cards)
+      }
+
+
+      function setStyles(){
+        let family = document.getElementById('font-family').value
+        let bg = document.getElementById('background-color').value
+        let color = document.getElementById('font-color').value
+        let cardCount = document.getElementById('card-count').value
+        let fontSize = document.getElementById('font-size').value
+        let showContent = document.getElementById('show-content').checked
+        let showMeta = document.getElementById('show-meta').checked
+
+
+        root.style.setProperty('--card-font', family)
+        root.style.setProperty('--card-bg', bg)
+        root.style.setProperty('--card-color', color)
+        root.style.setProperty('--card-height', 1122/cardCount + "px")
+        root.style.setProperty('--card-size', fontSize + "px")
+
+        root.style.setProperty('--metadata-display', showMeta ? 'inline-block' : 'none')
+        root.style.setProperty('--content-display', showContent ? 'inline-block' : 'none')
+
+      }
+
+
+      function setFileName(){
+        let file =  document.getElementById('csv-input').files[0]
+
+        if(file.type.includes('csv')){
+          document.querySelector('.file-input-label').innerHTML = "Added: <b>" + file.name + "</b>"
+        }
+
+        else{
+          showToast('Please only upload a .csv file')
+        }
+      }
+
+      function handleTab(e){
+        e.preventDefault();
+        let textarea = e.target
+
+        textarea.setRangeText(
+          '  ',
+          textarea.selectionStart,
+          textarea.selectionStart,
+          'end'
+        )
+      }
+
+      function parseMarkdownList(text){
+          let items = text.split('\n-')
+          let result = []
+
+          for(let ele of items){
+            let lines = ele.split('\n')
+            let title = lines[0].replace(/^-/, '')
+            let content = lines.slice(1).map(a => a.replace(/^\s+-\s?/, '')).reduce( (a,b) => a.concat('\n').concat(b), '')
+            result.push({title: title, content: content, metadata: ''})
+          }
+
+          return result
+      }
+
+
+      function showToast(message){
+
+        toastHolder.innerHTML = ""
+        if(toastTimeout) clearTimeout(toastTimeout)
+
+        let Toast = () => {
+          return div({ class: 'toast'}, message)
+        } 
+        van.add(toastHolder, Toast)
+
+        toastTimeout = setTimeout( () => toastHolder.innerHTML = "", 4000 )
+      }
+
+      function toggleSidebar(){
+        console.log('toggle')
+        sidebarVisible = !sidebarVisible
+        root.style.setProperty('--sidebar-display', sidebarVisible ? 'inline-block' : 'none')
+      }
+    
     </script>
-</body>
+  </body>
 </html>
