@@ -23,9 +23,11 @@
     <meta name="twitter:description" content="Create printable index cards from lists, CSVs, or Github Issues." />
     <meta name="twitter:image" content="https://printdex.joodaloop.com/card.png" />
 
-      <meta name="description" content="Create printable index cards from lists, CSVs, or Github Issues.">
+    <meta name="description" content="Create printable index cards from lists, CSVs, or Github Issues.">
     <script type="text/javascript" src="./scripts/van.js"></script>
     <script type="text/javascript" src="./scripts/papaparse.js"></script>
+    <script type="text/javascript" src="./scripts/html2pdf.bundle.min.js"></script>
+
 
     <style>
 
@@ -72,7 +74,7 @@
         --bg: white;
         --light-border: #ddd;
         --card-width: 50%;
-        --card-height: 280.5px;
+        --card-height: 74.25mm;
         --card-font: inherit;
         --card-color: #444;
         --card-bg: #FFF;
@@ -92,6 +94,7 @@
         color: #555;
         display: flex;
         margin: 0px;
+        font-size: 16px;
       }
 
       h1{
@@ -136,6 +139,10 @@
         width: 100%;
       }
 
+      input{
+        border: solid 1px #444;
+      }
+
       #ui{
         width: 100%;
       }
@@ -162,6 +169,7 @@
         line-height: 1.6em;
         font-family: monospace;
         outline: none;
+        font-size: inherit;
       }
 
       .flex{
@@ -239,7 +247,7 @@
       }
 
       .printme{
-        width: 793px;
+        width: 210mm;
       }
 
       .preview:empty{
@@ -391,6 +399,10 @@
           background: var(--card-bg);
         }
       }
+
+      @page {
+        margin: 0cm !important;
+      }
     </style>
 
   </head>
@@ -466,9 +478,9 @@
       <div class=preview-holder>
         <div style="display: flex; padding-bottom: 2em; width: 100%; font-size: 14px; gap: 10%">
           <div style="display: inline-block;">
-            This is just a preview, the actual cards will be sized to fit perfectly on A4 size sheets of paper when you hit "Print".
+            This is just a preview, the actual cards will be sized to fit perfectly on A4 size sheets of paper..
           </div>
-          <button style="width: 7em; flex-shrink: 0; height: 2.5em;" onclick="window.print()"> Print </button>
+          <button style="width: 10em; flex-shrink: 0; height: 2.5em;" onclick="handlePrint()"> Download PDF </button>
         </div>
         <div class="preview" id=preview></div>
       </div>
@@ -795,7 +807,7 @@
         root.style.setProperty('--card-font', family)
         root.style.setProperty('--card-bg', bg)
         root.style.setProperty('--card-color', color)
-        root.style.setProperty('--card-height', 1122/cardCount + "px")
+        root.style.setProperty('--card-height', 297/cardCount + "mm")
         root.style.setProperty('--card-size', fontSize + "px")
 
         root.style.setProperty('--metadata-display', showMeta ? 'inline-block' : 'none')
@@ -860,6 +872,12 @@
         console.log('toggle')
         sidebarVisible = !sidebarVisible
         root.style.setProperty('--sidebar-display', sidebarVisible ? 'inline-block' : 'none')
+      }
+
+      function handlePrint(){
+        console.log("printing")
+        var element = document.querySelector('.preview');
+        let pdf = html2pdf(element).save();
       }
     
     </script>
