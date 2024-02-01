@@ -545,16 +545,16 @@
         )
       }
 
-      let LinearMenu = () => {
-        return div(
-          h2('Linear Issues'),
-          div({class: 'flex'}, 
-            input({ placeholder: 'lin_api_uehighWEIhhtisehIHEIUthesgesi', class: 'full' }),
-            button("Fetch issues")
-          ),
-          p(`This app is a single, static index.html pages and works fully from your browser, so your token is never sent anywhere except Linear's servers.`),
-        )
-      }
+      // let LinearMenu = () => {
+      //   return div(
+      //     h2('Linear Issues'),
+      //     div({class: 'flex'}, 
+      //       input({ placeholder: 'api_key', class: 'full' }),
+      //       button("Fetch issues")
+      //     ),
+      //     p(`This app is a single, static index.html pages and works fully from your browser, so your token is never sent anywhere except Linear's servers.`),
+      //   )
+      // }
 
       let TodoistMenu = () => {
         return div(
@@ -597,7 +597,7 @@
       listToCards()
 
 
-      const apiKey = 'lin_api_M6RpdJYPIIgJPe9Ww8AkTwrh5fQBjZXJLMlHlr4w';
+      const apiKey = 'api_key';
       const apiUrl = 'https://api.linear.app/graphql';
 
       const graphqlQuery = '{ "query": "{ issues { nodes { id title } } }" }';
